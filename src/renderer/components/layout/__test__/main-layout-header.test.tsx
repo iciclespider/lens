@@ -6,11 +6,11 @@ import "@testing-library/jest-dom/extend-expect";
 
 import { MainLayoutHeader } from "../main-layout-header";
 import { Cluster } from "../../../../main/cluster";
-import { workspaceStore } from "../../../../common/workspace-store";
 import { broadcastMessage, requestMain } from "../../../../common/ipc";
 import { clusterDisconnectHandler } from "../../../../common/cluster-ipc";
 import { ConfirmDialog } from "../../confirm-dialog";
 import { IpcRendererNavigationEvents } from "../../../navigation/events";
+import { WorkspaceStore } from "../../../../common/workspace-store";
 
 const mockBroadcastIpc = broadcastMessage as jest.MockedFunction<typeof broadcastMessage>;
 const mockRequestMain = requestMain as jest.MockedFunction<typeof requestMain>;
@@ -19,7 +19,7 @@ const cluster: Cluster = new Cluster({
   id: "foo",
   contextName: "minikube",
   kubeConfigPath: "minikube-config.yml",
-  workspace: workspaceStore.currentWorkspaceId,
+  workspace: WorkspaceStore.defaultId
 });
 
 describe("<MainLayoutHeader />", () => {

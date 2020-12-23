@@ -4,10 +4,10 @@ import React from "react";
 import { computed, observable, reaction } from "mobx";
 import { disposeOnUnmount, observer } from "mobx-react";
 
-import { userStore } from "../../../common/user-store";
 import { isWindows } from "../../../common/vars";
+import { UserStore } from "../../../common/user-store";
+import { ThemeStore } from "../../theme.store";
 import { appPreferenceRegistry } from "../../../extensions/registries/app-preference-registry";
-import { themeStore } from "../../theme.store";
 import { Checkbox } from "../checkbox";
 import { Input } from "../input";
 import { PageLayout } from "../layout/page-layout";
@@ -20,11 +20,11 @@ import { navigation } from "../../navigation";
 
 @observer
 export class Preferences extends React.Component {
-  @observable httpProxy = userStore.preferences.httpsProxy || "";
-  @observable shell = userStore.preferences.shell || "";
+  @observable httpProxy = UserStore.getInstance().preferences.httpsProxy || "";
+  @observable shell = UserStore.getInstance().preferences.shell || "";
 
   @computed get themeOptions(): SelectOption<string>[] {
-    return themeStore.themes.map(theme => ({
+    return ThemeStore.getInstance().themes.map(theme => ({
       label: theme.name,
       value: theme.id,
     }));
@@ -46,17 +46,15 @@ export class Preferences extends React.Component {
   }
 
   render() {
-    const { preferences } = userStore;
+    const { preferences } = UserStore.getInstance();
     const header = <h2>Preferences</h2>;
-    let defaultShell = process.env.SHELL || process.env.PTYSHELL;
-
-    if (!defaultShell) {
-      if (isWindows) {
-        defaultShell = "powershell.exe";
-      } else {
-        defaultShell = "System default shell";
-      }
-    }
+    const defaultShell = process.env.SHELL
+      || process.env.PTYSHELL
+      || (
+        isWindows
+          ? "powershell.exe"
+          : "System default shell"
+      );
 
     return (
       <ScrollSpy htmlFor="ScrollSpyRoot" render={navigation => (

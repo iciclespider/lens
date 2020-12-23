@@ -1,18 +1,18 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { Workspace, workspaceStore } from "../../../common/workspace-store";
+import { Workspace, WorkspaceStore } from "../../../common/workspace-store";
 import { v4 as uuid } from "uuid";
 import { commandRegistry } from "../../../extensions/registries/command-registry";
 import { Input, InputValidator } from "../input";
 import { navigate } from "../../navigation";
 import { CommandOverlay } from "../command-palette/command-container";
 import { landingURL } from "../+landing-page";
-import { clusterStore } from "../../../common/cluster-store";
+import { ClusterStore } from "../../../common/cluster-store";
 
 const uniqueWorkspaceName: InputValidator = {
   condition: ({ required }) => required,
   message: () => `Workspace with this name already exists`,
-  validate: value => !workspaceStore.getByName(value),
+  validate: value => !WorkspaceStore.getInstance().getByName(value),
 };
 
 @observer
@@ -21,7 +21,7 @@ export class AddWorkspace extends React.Component {
     if (!name.trim()) {
       return;
     }
-    const workspace = workspaceStore.addWorkspace(new Workspace({
+    const workspace = WorkspaceStore.getInstance().addWorkspace(new Workspace({
       id: uuid(),
       name
     }));
@@ -30,8 +30,8 @@ export class AddWorkspace extends React.Component {
       return;
     }
 
-    workspaceStore.setActive(workspace.id);
-    clusterStore.setActive(null);
+    WorkspaceStore.getInstance().setActive(workspace.id);
+    ClusterStore.getInstance().setActive(null);
     navigate(landingURL());
     CommandOverlay.close();
   }

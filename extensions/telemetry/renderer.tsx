@@ -1,7 +1,7 @@
 import { LensRendererExtension } from "@k8slens/extensions";
-import { telemetryPreferencesStore } from "./src/telemetry-preferences-store";
+import { TelemetryPreferencesStore } from "./src/telemetry-preferences-store";
 import { TelemetryPreferenceHint, TelemetryPreferenceInput } from "./src/telemetry-preference";
-import { tracker } from "./src/tracker";
+import { Tracker } from "./src/tracker";
 import React from "react";
 
 export default class TelemetryRendererExtension extends LensRendererExtension {
@@ -11,14 +11,20 @@ export default class TelemetryRendererExtension extends LensRendererExtension {
       id: "telemetry-tracking",
       components: {
         Hint: () => <TelemetryPreferenceHint/>,
-        Input: () => <TelemetryPreferenceInput telemetry={telemetryPreferencesStore}/>
+        Input: () => <TelemetryPreferenceInput/>
       }
     }
   ];
 
   async onActivate() {
     console.log("telemetry extension activated");
-    tracker.start();
-    await telemetryPreferencesStore.loadExtension(this);
+    const telStore = TelemetryPreferencesStore.getInstanceOrCreate();
+
+    Tracker.getInstanceOrCreate().start();
+    await telStore.loadExtension(this);
+  }
+
+  async onDeactivate() {
+    TelemetryPreferencesStore.resetInstance();
   }
 }

@@ -10,7 +10,7 @@ import { WorkspaceClusterMenu } from "./workspace-cluster-menu";
 import { kebabCase } from "lodash";
 import { addClusterURL } from "../+add-cluster";
 import { observable, reaction } from "mobx";
-import { workspaceStore } from "../../../common/workspace-store";
+import { WorkspaceStore } from "../../../common/workspace-store";
 
 enum sortBy {
     name = "name",
@@ -25,7 +25,7 @@ export class WorkspaceOverview extends Component {
 
   componentDidMount() {
     disposeOnUnmount(this, [
-      reaction(() => workspaceStore.currentWorkspaceId, workspaceId => {
+      reaction(() => WorkspaceStore.getInstance().currentWorkspaceId, workspaceId => {
         this.workspaceClusterStore = new WorkspaceClusterStore(workspaceId);
         this.workspaceClusterStore.loadAll().catch(error => console.log("workspaceClusterStore.loadAll", error));
       }, {
@@ -77,7 +77,7 @@ export class WorkspaceOverview extends Component {
           onAdd: () => navigate(addClusterURL()),
         }}
         renderItemMenu={(clusterItem: ClusterItem) => (
-          <WorkspaceClusterMenu clusterItem={clusterItem} workspace={workspaceStore.currentWorkspace} workspaceClusterStore={workspaceClusterStore}/>
+          <WorkspaceClusterMenu clusterItem={clusterItem} workspace={WorkspaceStore.getInstance().currentWorkspace} workspaceClusterStore={workspaceClusterStore}/>
         )}
       />
     );

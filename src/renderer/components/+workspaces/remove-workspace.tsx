@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { computed} from "mobx";
-import { WorkspaceStore, workspaceStore } from "../../../common/workspace-store";
+import { WorkspaceStore } from "../../../common/workspace-store";
 import { ConfirmDialog } from "../confirm-dialog";
 import { commandRegistry } from "../../../extensions/registries/command-registry";
 import { Select } from "../select";
@@ -10,15 +10,19 @@ import { CommandOverlay } from "../command-palette/command-container";
 @observer
 export class RemoveWorkspace extends React.Component {
   @computed get options() {
-    return workspaceStore.enabledWorkspacesList.filter((workspace) => workspace.id !== WorkspaceStore.defaultId).map((workspace) => {
-      return { value: workspace.id, label: workspace.name };
-    });
+    return WorkspaceStore.getInstance()
+      .enabledWorkspacesList
+      .filter(workspace => workspace.id !== WorkspaceStore.defaultId)
+      .map((workspace) => ({
+        value: workspace.id,
+        label: workspace.name
+      }));
   }
 
   onChange(id: string) {
-    const workspace = workspaceStore.enabledWorkspacesList.find((workspace) => workspace.id === id);
+    const workspace = WorkspaceStore.getInstance().getById(id);
 
-    if (!workspace ) {
+    if (!workspace?.enabled) {
       return;
     }
 
@@ -30,7 +34,7 @@ export class RemoveWorkspace extends React.Component {
         accent: true,
       },
       ok: () => {
-        workspaceStore.removeWorkspace(workspace);
+        WorkspaceStore.getInstance().removeWorkspace(workspace);
       },
       message: (
         <div className="confirm flex column gaps">

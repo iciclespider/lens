@@ -1,6 +1,6 @@
 import { WorkspaceId } from "../../../common/workspace-store";
 import { Cluster } from "../../../main/cluster";
-import { clusterStore } from "../../../common/cluster-store";
+import { ClusterStore } from "../../../common/cluster-store";
 import { ItemObject, ItemStore } from "../../item.store";
 import { autobind } from "../../utils";
 
@@ -54,7 +54,7 @@ export class WorkspaceClusterStore extends ItemStore<ClusterItem> {
   loadAll() {
     return this.loadItems(
       () => (
-        clusterStore
+        ClusterStore.getInstance()
           .getByWorkspaceId(this.workspaceId)
           .filter(cluster => cluster.enabled)
           .map(cluster => new ClusterItem(cluster))
@@ -66,7 +66,7 @@ export class WorkspaceClusterStore extends ItemStore<ClusterItem> {
     const { cluster: { isManaged, id: clusterId }} = clusterItem;
 
     if (!isManaged) {
-      return super.removeItem(clusterItem, () => clusterStore.removeById(clusterId));
+      return super.removeItem(clusterItem, () => ClusterStore.getInstance().removeById(clusterId));
     }
   }
 }

@@ -9,8 +9,8 @@ import { Cluster } from "./cluster";
 import { helmCli } from "./helm/helm-cli";
 import { isWindows } from "../common/vars";
 import { appEventBus } from "../common/event-bus";
-import { userStore } from "../common/user-store";
 import { clearKubeconfigEnvVars } from "./utils/clear-kube-env-vars";
+import { UserStore } from "../common/user-store";
 
 export class ShellSession extends EventEmitter {
   static shellEnvs: Map<string, any> = new Map();
@@ -36,9 +36,9 @@ export class ShellSession extends EventEmitter {
   public async open() {
     this.kubeconfigPath =  await this.cluster.getProxyKubeconfigPath();
     this.kubectlBinDir = await this.kubectl.binDir();
-    const pathFromPreferences = userStore.preferences.kubectlBinariesPath || this.kubectl.getBundledPath();
+    const pathFromPreferences = UserStore.getInstance().preferences.kubectlBinariesPath || this.kubectl.getBundledPath();
 
-    this.kubectlPathDir = userStore.preferences.downloadKubectlBinaries ? this.kubectlBinDir : path.dirname(pathFromPreferences);
+    this.kubectlPathDir = UserStore.getInstance().preferences.downloadKubectlBinaries ? this.kubectlBinDir : path.dirname(pathFromPreferences);
     this.helmBinDir = helmCli.getBinaryDir();
     const env = await this.getCachedShellEnv();
     const shell = env.PTYSHELL;
@@ -107,7 +107,7 @@ export class ShellSession extends EventEmitter {
   protected async getShellEnv() {
     const env = clearKubeconfigEnvVars(JSON.parse(JSON.stringify(await shellEnv())));
     const pathStr = [this.kubectlBinDir, this.helmBinDir, process.env.PATH].join(path.delimiter);
-    const shell = userStore.preferences.shell || process.env.SHELL || process.env.PTYSHELL;
+    const shell = UserStore.getInstance().preferences.shell || process.env.SHELL || process.env.PTYSHELL;
     const { preferences } = this.cluster;
 
     if(isWindows) {

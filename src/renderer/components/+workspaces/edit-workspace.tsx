@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { WorkspaceStore, workspaceStore } from "../../../common/workspace-store";
+import { WorkspaceStore } from "../../../common/workspace-store";
 import { commandRegistry } from "../../../extensions/registries/command-registry";
 import { Input, InputValidator } from "../input";
 import { CommandOverlay } from "../command-palette/command-container";
@@ -9,13 +9,13 @@ const validateWorkspaceName: InputValidator = {
   condition: ({ required }) => required,
   message: () => `Workspace with this name already exists`,
   validate: (value) => {
-    const current = workspaceStore.currentWorkspace;
+    const current = WorkspaceStore.getInstance().currentWorkspace;
 
     if (current.name === value.trim()) {
       return true;
     }
 
-    return !workspaceStore.enabledWorkspacesList.find((workspace) => workspace.name === value);
+    return !WorkspaceStore.getInstance().enabledWorkspacesList.find((workspace) => workspace.name === value);
   }
 };
 
@@ -31,7 +31,7 @@ export class EditWorkspace extends React.Component<{}, EditWorkspaceState> {
   };
 
   componentDidMount() {
-    this.setState({name: workspaceStore.currentWorkspace.name});
+    this.setState({name: WorkspaceStore.getInstance().currentWorkspace.name});
   }
 
   onSubmit(name: string) {
@@ -39,7 +39,7 @@ export class EditWorkspace extends React.Component<{}, EditWorkspaceState> {
       return;
     }
 
-    workspaceStore.currentWorkspace.name = name;
+    WorkspaceStore.getInstance().currentWorkspace.name = name;
     CommandOverlay.close();
   }
 

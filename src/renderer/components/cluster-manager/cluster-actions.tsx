@@ -3,7 +3,7 @@ import uniqueId from "lodash/uniqueId";
 import { clusterSettingsURL } from "../+cluster-settings";
 import { landingURL } from "../+landing-page";
 
-import { clusterStore } from "../../../common/cluster-store";
+import { ClusterStore } from "../../../common/cluster-store";
 import { broadcastMessage, requestMain } from "../../../common/ipc";
 import { clusterDisconnectHandler } from "../../../common/cluster-ipc";
 import { ConfirmDialog } from "../confirm-dialog";
@@ -24,7 +24,7 @@ export const ClusterActions = (cluster: Cluster) => ({
     params: { clusterId: cluster.id }
   })),
   disconnect: async () => {
-    clusterStore.deactivate(cluster.id);
+    ClusterStore.getInstance().deactivate(cluster.id);
     navigate(landingURL());
     await requestMain(clusterDisconnectHandler, cluster.id);
   },
@@ -38,8 +38,8 @@ export const ClusterActions = (cluster: Cluster) => ({
         label: "Remove"
       },
       ok: () => {
-        clusterStore.deactivate(cluster.id);
-        clusterStore.removeById(cluster.id);
+        ClusterStore.getInstance().deactivate(cluster.id);
+        ClusterStore.getInstance().removeById(cluster.id);
         navigate(landingURL());
       },
       message: <p>

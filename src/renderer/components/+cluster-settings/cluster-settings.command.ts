@@ -1,7 +1,7 @@
 import { navigate } from "../../navigation";
 import { commandRegistry } from "../../../extensions/registries/command-registry";
 import { clusterSettingsURL } from "./cluster-settings.route";
-import { clusterStore } from "../../../common/cluster-store";
+import { ClusterStore } from "../../../common/cluster-store";
 
 commandRegistry.add({
   id: "cluster.viewCurrentClusterSettings",
@@ -9,7 +9,7 @@ commandRegistry.add({
   scope: "global",
   action: () => navigate(clusterSettingsURL({
     params: {
-      clusterId: clusterStore.active.id
+      clusterId: ClusterStore.getInstance().active.id
     }
   })),
   isActive: (context) => !!context.cluster

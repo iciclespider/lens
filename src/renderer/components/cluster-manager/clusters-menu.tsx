@@ -5,8 +5,8 @@ import { remote } from "electron";
 import type { Cluster } from "../../../main/cluster";
 import { DragDropContext, Draggable, DraggableProvided, Droppable, DroppableProvided, DropResult } from "react-beautiful-dnd";
 import { observer } from "mobx-react";
-import { ClusterId, clusterStore } from "../../../common/cluster-store";
-import { workspaceStore } from "../../../common/workspace-store";
+import { ClusterId, ClusterStore } from "../../../common/cluster-store";
+import { WorkspaceStore } from "../../../common/workspace-store";
 import { ClusterIcon } from "../cluster-icon";
 import { Icon } from "../icon";
 import { autobind, cssNames, IClassName } from "../../utils";
@@ -65,21 +65,21 @@ export class ClustersMenu extends React.Component<Props> {
   @autobind()
   swapClusterIconOrder(result: DropResult) {
     if (result.reason === "DROP") {
-      const { currentWorkspaceId } = workspaceStore;
+      const { currentWorkspaceId } = WorkspaceStore.getInstance();
       const {
         source: { index: from },
         destination: { index: to },
       } = result;
 
-      clusterStore.swapIconOrders(currentWorkspaceId, from, to);
+      ClusterStore.getInstance().swapIconOrders(currentWorkspaceId, from, to);
     }
   }
 
   render() {
     const { className } = this.props;
-    const workspace = workspaceStore.getById(workspaceStore.currentWorkspaceId);
-    const clusters = clusterStore.getByWorkspaceId(workspace.id).filter(cluster => cluster.enabled);
-    const activeClusterId = clusterStore.activeCluster;
+    const workspace = WorkspaceStore.getInstance().currentWorkspace;
+    const clusters = ClusterStore.getInstance().getByWorkspaceId(workspace.id).filter(cluster => cluster.enabled);
+    const activeClusterId = ClusterStore.getInstance().activeCluster;
 
     return (
       <div className={cssNames("ClustersMenu flex column", className)}>
@@ -162,7 +162,8 @@ export class ClustersMenu extends React.Component<Props> {
 @observer
 export class ChooseCluster extends React.Component {
   @computed get options() {
-    const clusters = clusterStore.getByWorkspaceId(workspaceStore.currentWorkspaceId).filter(cluster => cluster.enabled);
+    const workspace = WorkspaceStore.getInstance().currentWorkspace;
+    const clusters = ClusterStore.getInstance().getByWorkspaceId(workspace.id).filter(cluster => cluster.enabled);
     const options = clusters.map((cluster) => {
       return { value: cluster.id, label: cluster.name };
     });
